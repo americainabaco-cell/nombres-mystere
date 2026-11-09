@@ -1,0 +1,129 @@
+html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Le Nombre Mystère</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 40px 20px;
+      background: #f0f4ff;
+    }
+    input, button {
+      font-size: 20px;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #999;
+    }
+    button {
+      background: green;
+      color: white;
+      border: none;
+    }
+    #rejouer {
+      background: orange;
+    }
+    #suivant {
+      background: #4a6cf7;
+      display: none;
+    }
+    #jeu {
+      display: none;
+    }
+    #trophee {
+      font-size: 80px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="accueil">
+    <h1>Le Nombre Mystère</h1>
+    <p>J'ai caché un nombre. Saurez-vous le trouver ? Cinq niveaux vous attendent, de plus en plus difficiles.</p>
+    <button onclick="commencer()">Jouer</button>
+  </div>
+
+  <div id="jeu">
+    <h1>Le Nombre Mystère</h1>
+    <h2 id="niveau"></h2>
+    <p id="consigne"></p>
+    <input type="number" id="reponse">
+    <button onclick="verifier()">Valider</button>
+    <button id="rejouer" onclick="rejouer()">Rejouer</button>
+    <button id="suivant" onclick="niveauSuivant()">Niveau suivant</button>
+    <p id="message"></p>
+    <div id="trophee">🏆</div>
+  </div>
+
+  <script>
+    const maximums = [3, 5, 7, 9, 11];
+    const essaisMax = 10;
+    let niveau = 0;
+    let secret;
+    let essais;
+    let fini;
+
+    function commencer() {
+      document.getElementById("accueil").style.display = "none";
+      document.getElementById("jeu").style.display = "block";
+      demarrer();
+    }
+
+    function demarrer() {
+      secret = Math.floor(Math.random() * maximums[niveau]) + 1;
+      essais = 0;
+      fini = false;
+      document.getElementById("niveau").textContent =
+        "Niveau " + (niveau + 1) + " sur 5";
+      document.getElementById("consigne").textContent =
+        "Nombre entre 1 et " + maximums[niveau] + ". Tu as " + essaisMax + " essais.";
+      document.getElementById("message").textContent = "";
+      document.getElementById("reponse").value = "";
+      document.getElementById("suivant").style.display = "none";
+      document.getElementById("trophee").style.display = "none";
+    }
+
+    function verifier() {
+      if (fini) return;
+      let choix = Number(document.getElementById("reponse").value);
+      let message = document.getElementById("message");
+      essais = essais + 1;
+      let restants = essaisMax - essais;
+
+      if (choix === secret) {
+        fini = true;
+        if (niveau === 4) {
+          message.textContent = "Champion ! Tu as gagné les 5 niveaux du Nombre Mystère !";
+          document.getElementById("trophee").style.display = "block";
+        } else {
+          message.textContent = "🎉 Bravo ! Tu as trouvé en " + essais + " essais ! Prêt pour le niveau suivant ?";
+          document.getElementById("suivant").style.display = "inline";
+        }
+      } else if (restants === 0) {
+        fini = true;
+        message.textContent = "Perdu ! Le nombre était " + secret + ".";
+      } else if (choix < secret) {
+        message.textContent = "Trop petit. Il te reste " + restants + " essais.";
+      } else {
+        message.textContent = "Trop grand. Il te reste " + restants + " essais.";
+      }
+
+      document.getElementById("reponse").value = "";
+      document.getElementById("reponse").focus();
+    }
+
+    function rejouer() {
+      demarrer();
+    }
+
+    function niveauSuivant() {
+      niveau = niveau + 1;
+      demarrer();
+    }
+  </script>
+</body>
+</html>
